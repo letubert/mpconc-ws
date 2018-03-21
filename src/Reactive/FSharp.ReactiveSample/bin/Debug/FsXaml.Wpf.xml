@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>FsXaml.Wpf</name></assembly>
+<members>
+<member name="M:FsXaml.ConverterBase.System-Windows-Data-IValueConverter-ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+<summary>
+ convert a value back
+</summary>
+</member>
+<member name="M:FsXaml.ConverterBase.System-Windows-Data-IValueConverter-Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+<summary>
+ convert a value to new value
+</summary>
+</member>
+<member name="M:FsXaml.ConverterBase.#ctor(Microsoft.FSharp.Core.FSharpFunc{System.Object,Microsoft.FSharp.Core.FSharpFunc{System.Type,Microsoft.FSharp.Core.FSharpFunc{System.Object,Microsoft.FSharp.Core.FSharpFunc{System.Globalization.CultureInfo,System.Object}}}})">
+<summary>
+ constructor take nullFunction as inputs
+</summary>
+</member>
+<member name="T:FsXaml.ConverterBase">
+<summary>
+ Base class for standard WPF style converters, mapped to curried forms for the convert and convert back methods
+</summary>
+</member>
+<member name="T:FsXaml.IEventArgsConverter">
+<summary>
+ Used for one-way conversion from EventArgs -&gt; other types when used with EventToCommand 
+</summary>
+</member>
+<member name="M:FsXaml.MemberAccessor.GetResourceByKey``1(System.Windows.ResourceDictionary,System.String)">
+<summary>
+ Provides access to keyed children of a ResourceDictionary
+</summary>
+</member>
+<member name="M:FsXaml.MemberAccessor.GetNamedMember``1(System.Windows.FrameworkElement,System.String)">
+<summary>
+ Gets a named child element by name
+</summary>
+</member>
+<member name="T:FsXaml.MemberAccessor">
+<summary>
+ Provides access to named children of a FrameworkElement
+</summary>
+</member>
+</members>
+</doc>

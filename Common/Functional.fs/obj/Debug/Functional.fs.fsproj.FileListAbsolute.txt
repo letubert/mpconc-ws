@@ -1,0 +1,14 @@
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\Functional.fs.XML
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\Functional.fs.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\Functional.fs.pdb
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.Core.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.PowerPack.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.PowerPack.Parallel.Seq.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\System.ValueTuple.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.PowerPack.xml
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.PowerPack.Parallel.Seq.xml
+C:\Github\fcon-workshop\src\Common\Functional.fs\bin\Debug\FSharp.Core.xml
+C:\Github\fcon-workshop\src\Common\Functional.fs\obj\Debug\Functional.fs.fsproj.CopyComplete
+C:\Github\fcon-workshop\src\Common\Functional.fs\obj\Debug\Functional.fs.dll
+C:\Github\fcon-workshop\src\Common\Functional.fs\obj\Debug\Functional.fs.pdb
+C:\Github\fcon-workshop\src\Common\Functional.fs\obj\Debug\Functional.fs.fsprojResolveAssemblyReference.cache

@@ -1,0 +1,8 @@
+C:\Github\fcon-workshop\src\Common\Lib\CommonHelpers.dll.config
+C:\Github\fcon-workshop\src\Common\Lib\CommonHelpers.dll
+C:\Github\fcon-workshop\src\Common\Lib\CommonHelpers.pdb
+C:\Github\fcon-workshop\src\Common\CommonHelpers\obj\Debug\CommonHelpers.csprojResolveAssemblyReference.cache
+C:\Github\fcon-workshop\src\Common\CommonHelpers\obj\Debug\CommonHelpers.csproj.CoreCompileInputs.cache
+C:\Github\fcon-workshop\src\Common\CommonHelpers\obj\Debug\CommonHelpers.csproj.CopyComplete
+C:\Github\fcon-workshop\src\Common\CommonHelpers\obj\Debug\CommonHelpers.dll
+C:\Github\fcon-workshop\src\Common\CommonHelpers\obj\Debug\CommonHelpers.pdb

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>WebCrawler.Core</name></assembly>
+<members>
+<member name="M:WebCrawler.Core.CrawlerAgent.Start(System.String)">
+<summary>
+ Start the agent by adding the specified URL to work items
+</summary>
+</member>
+<member name="M:WebCrawler.Core.CrawlerAgent.GetAsync">
+<summary>
+ Asynchronously get the next work item (returns Task that can be used from C#)
+</summary>
+</member>
+<member name="M:WebCrawler.Core.CrawlerAgent.Enqueue(System.String,System.String[])">
+<summary>
+ Enqueue results of crawling and mark &apos;from&apos; url as visited
+</summary>
+</member>
+<member name="T:WebCrawler.Core.CrawlerAgent">
+<summary>
+ The agent can be used to store state of crawling. The caller can use
+ &apos;GetAsync&apos; method to get the next work item from the queue and it can
+ report result using &apos;Enqueue&apos; (this will mark URL as visited and add
+ more URLs to the working queue).
+</summary>
+</member>
+</members>
+</doc>

@@ -1,0 +1,11 @@
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\FsPipeline.XML
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\FsPipeline.fs.dll
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\FsPipeline.fs.pdb
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\FSharp.Core.dll
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\Functional.dll
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\Functional.pdb
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\bin\Debug\Functional.dll.config
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\obj\Debug\Pipeline.fs.fsprojResolveAssemblyReference.cache
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\obj\Debug\Pipeline.fs.fsproj.CopyComplete
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\obj\Debug\FsPipeline.fs.dll
+C:\Github\fcon-workshop\src\Module2\Pipeline.fs\obj\Debug\FsPipeline.fs.pdb

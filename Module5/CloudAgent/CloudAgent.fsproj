@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Settings.fs" />
+    <Compile Include="FSharpAsync1.fs" />
+    <Compile Include="FSharpAsync2.fs" />
+    <Compile Include="FSharpAsync3.fs" />
+    <Compile Include="FSharpAsync4.fs" />
+    <Compile Include="FSharpAsync5.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAzure.Storage" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>

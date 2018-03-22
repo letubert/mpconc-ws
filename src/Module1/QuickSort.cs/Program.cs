@@ -15,7 +15,7 @@ namespace QuickSort.cs
             PrintNumberRecursively(++value);
         }
 
-        static void Main(string[] args)
+        static void RunRecursion()
         {
             // Demo : 1.1
             // Test recursive method. It throws a stackoverflow... but it can be prevented
@@ -28,8 +28,13 @@ namespace QuickSort.cs
             {
                 Console.WriteLine(ex.Message);
             }
+        }
 
-            Random rand = new Random((int) DateTime.Now.Ticks);
+        static void Main(string[] args)
+        {
+            //RunRecursion();
+
+            Random rand = new Random((int)DateTime.Now.Ticks);
             int attempts = 5;
             int[][] dataSamples =
                 Enumerable.Range(0, attempts)

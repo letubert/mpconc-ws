@@ -808,11 +808,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Github\\mpconc-ws\\Module5\\CloudAgent\\CloudAgent.fsproj",
+      "projectUniqueName": "C:\\Github\\mpconc-ws\\src\\Module5\\CloudAgent\\CloudAgent.fsproj",
       "projectName": "CloudAgent",
-      "projectPath": "C:\\Github\\mpconc-ws\\Module5\\CloudAgent\\CloudAgent.fsproj",
+      "projectPath": "C:\\Github\\mpconc-ws\\src\\Module5\\CloudAgent\\CloudAgent.fsproj",
       "packagesPath": "C:\\Users\\Riccardp\\.nuget\\packages\\",
-      "outputPath": "C:\\Github\\mpconc-ws\\Module5\\CloudAgent\\obj\\",
+      "outputPath": "C:\\Github\\mpconc-ws\\src\\Module5\\CloudAgent\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",

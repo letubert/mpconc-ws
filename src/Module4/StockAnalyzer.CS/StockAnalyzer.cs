@@ -33,8 +33,7 @@ namespace StockAnalyzer.CS
 
     public class StockAnalyzer
     {
-        public static readonly string[] Stocks =
-            new[] { "MSFT", "FB", "AAPL", "YHOO", "EBAY", "INTC", "GOOG", "ORCL" };
+        public static readonly string[] stocks = new[] { "APPL", "AMZN", "FB", "GOOG", "MSFT" };
 
         //  The Or combinator applies to falls back behavior
         Func<string, string> googleSourceUrl = (symbol) =>
@@ -156,14 +155,13 @@ namespace StockAnalyzer.CS
         public async Task ProcessStockHistoryParallel(Chart chart, SynchronizationContext ctx)
         {
             var sw = Stopwatch.StartNew();
-            string[] stocks = new[] { "MSFT", "FB", "AAPL", "YHOO",
-                                      "EBAY", "INTC", "GOOG", "ORCL" };
 
             // TODO
             // (1) Process the stock analysis in parallel
             // When all the computation complete, then update the chart
             // Than control the level of parallelism processing max 2 stocks at a given time
             // Suggestion, use the RequestGate class
+            // SUggestion, use the Otherwise operator to load local tickers (from folder Tickers) in case there is a problem to connect to the Web
             List<Task<Tuple<string, StockData[]>>> stockHistoryTasks = null; ;
 
 

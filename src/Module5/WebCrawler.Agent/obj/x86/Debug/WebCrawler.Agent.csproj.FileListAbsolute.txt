@@ -1,2 +1,0 @@
-C:\Github\fcon-workshop\src\Module5\WebCrawler.Agent\obj\x86\Debug\WebCrawler.Agent.csprojResolveAssemblyReference.cache
-C:\Github\fcon-workshop\src\Module5\WebCrawler.Agent\obj\x86\Debug\WebCrawler.Agent.csproj.CoreCompileInputs.cache

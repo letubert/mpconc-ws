@@ -43,9 +43,9 @@ namespace RxConcurrentStockTickers
         public IObservable<T> ObserveLines() => GetLines().ToObservable(TaskPoolScheduler.Default);
     }
 
-    public static class ObservableDataStreams
+    public static class ObservableDataStreams_TODO
     {
-        public static IObservable<StockData> ObservableStreams
+        public static IObservable<StockData> ObservableStreams_TODO
             (this IEnumerable<string> filePaths, Func<string, string, StockData> map, int delay = 50)
         {
             var flStreams =
@@ -73,4 +73,36 @@ namespace RxConcurrentStockTickers
         }
     }
 
+
+     #region Solution
+    public static class ObservableDataStreams
+    {
+        public static IObservable<StockData> ObservableStreams
+            (this IEnumerable<string> filePaths, Func<string, string, StockData> map, int delay = 50)
+        {
+            var flStreams =
+                filePaths
+                     .Select(x => new FileLinesStream<StockData>(x, row => map(x, row)))
+                     .ToList();
+            return
+                flStreams
+                    .Select(x =>
+                    {
+                        var startData = new DateTime(2001, 1, 1);
+                        return Observable
+                                .Interval(TimeSpan.FromMilliseconds(delay))
+                                .Zip(x.ObserveLines(), (tick, stock) =>
+                                {
+                                    stock.Date = startData + TimeSpan.FromDays(tick);
+                                    return stock;
+                                });
+                    }
+                    )
+          // TODO : 3.5
+          // merge all the Observable into one
+          // suggestion, you could use LINQ aggregate
+          .Aggregate((o1, o2) => o1.Merge(o2));
+        }
+    }
+    #endregion
 }

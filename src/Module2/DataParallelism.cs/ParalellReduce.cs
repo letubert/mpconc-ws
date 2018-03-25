@@ -25,14 +25,34 @@ namespace DataParallelism.CSharp
         // parallel Reduce function implementation using Aggregate
         // Example of signature, but something is missing
         // public static TValue Reduce<TValue>(this IEnumerable<TValue> source) =>
-        public static TValue Reduce<TValue>(this ParallelQuery<TValue> source, Func<TValue, TValue, TValue> func) => default(TValue);
+        public static TValue Reduce_TODO<TValue>(this ParallelQuery<TValue> source, Func<TValue, TValue, TValue> func) => default(TValue);
 
-         public static TValue Reduce<TValue>(this IEnumerable<TValue> source, TValue seed,
+         public static TValue Reduce_TODO<TValue>(this IEnumerable<TValue> source, TValue seed,
             Func<TValue, TValue, TValue> reduce) => default(TValue);
 
-        public static TResult[] Reduce<TSource, TKey, TMapped, TResult>(
+        public static TResult[] Reduce_TODO<TSource, TKey, TMapped, TResult>(
             this IEnumerable<IGrouping<TKey, TMapped>> source, Func<IGrouping<TKey, TMapped>, TResult> reduce) => null;
 
+        #region solution
+        public static TValue Reduce<TValue>(this ParallelQuery<TValue> source, Func<TValue, TValue, TValue> func) =>
+            ParallelEnumerable.Aggregate(source, (item1, item2) => func(item1, item2));
+
+        public static TValue Reduce<TValue>(this IEnumerable<TValue> source, TValue seed,
+            Func<TValue, TValue, TValue> reduce) =>
+            source.AsParallel()
+                .Aggregate(seed, (local, value) => reduce(local, value),
+                    (overall, local) => reduce(overall, local), overall => overall);
+
+        public static Func<Func<TSource, TSource, TSource>, TSource> Reduce<TSource>(this IEnumerable<TSource> source)
+            => func => source.AsParallel().Aggregate((item1, item2) => func(item1, item2));
+
+        public static TResult[] Reduce<TSource, TKey, TMapped, TResult>(
+            this IEnumerable<IGrouping<TKey, TMapped>> source, Func<IGrouping<TKey, TMapped>, TResult> reduce) =>
+            source.AsParallel()
+                .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+                .WithDegreeOfParallelism(Environment.ProcessorCount)
+                .Select(reduce).ToArray();
+        #endregion
 
         public static void SumPrimeNumber_Reducer()
         {

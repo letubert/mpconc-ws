@@ -52,13 +52,57 @@ namespace QuickSort.cs
                );
         }
 
-
         // TODO : 1.4
         // (1) write a parallel and fast quick sort
-        public static void QuickSort_Parallel_Threshold<T>(T[] items) where T : IComparable<T>
+        public static void QuickSort_Parallel_Threshold_TODO<T>(T[] items) where T : IComparable<T>
         {
 
         }
+
+        #region Solution
+
+        public static void QuickSort_Parallel_Threshold<T>(T[] items) where T : IComparable<T>
+        {
+            int maxDepth = (int)Math.Log(Environment.ProcessorCount, 2.0);
+            QuickSort_Parallel_Threshold(items, 0, items.Length - 1, maxDepth);
+        }
+        private static void QuickSort_Parallel_Threshold<T>(T[] items, int left, int right, int depth) where T : IComparable<T>
+        {
+            if (left >= right)
+            {
+                return;
+            }
+
+            SwapElements(items, left, (left + right) / 2);
+            int pivot = left;
+            for (int current = left + 1; current <= right; ++current)
+            {
+                if (items[current].CompareTo(items[left]) < 0)
+                {
+                    ++pivot;
+                    SwapElements(items, pivot, current);
+                }
+            }
+
+            SwapElements(items, left, pivot);
+            if (depth >= 0)
+
+            {
+                QuickSort_Parallel_Threshold(items, left, pivot - 1, depth);
+                QuickSort_Parallel_Threshold(items, pivot + 1, right, depth);
+            }
+            else
+            {
+                --depth;
+                Parallel.Invoke(
+                       () => QuickSort_Parallel_Threshold(items, left, pivot - 1, depth),
+                       () => QuickSort_Parallel_Threshold(items, pivot + 1, right, depth)
+                   );
+            }
+        }
+
+
+        #endregion
 
         private static int Partition<T>(IList<T> arr, int low, int high) where T : IComparable<T>
         {

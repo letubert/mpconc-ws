@@ -17,15 +17,15 @@ namespace ReactiveAgent.Agents.Dataflow
     // TODO : 5.2
     // (1) implement an Agent using the TPL Dataflow
     // the Agent is stateless
-    public class StatelessDataflowAgent<TMessage> : IAgent<TMessage>
+    public class StatelessDataflowAgent_TODO<TMessage> : IAgent<TMessage>
     {
-        public StatelessDataflowAgent(Action<TMessage> action, CancellationTokenSource cts = null)
+        public StatelessDataflowAgent_TODO(Action<TMessage> action, CancellationTokenSource cts = null)
         {
             // (1) Implement Agent with TPL DATA FLOW
             // this constructor defines a synchronous operation
         }
 
-        public StatelessDataflowAgent(Func<TMessage, Task> action, CancellationTokenSource cts = null)
+        public StatelessDataflowAgent_TODO(Func<TMessage, Task> action, CancellationTokenSource cts = null)
         {
             // (1) Implement Agent with TPL DATA FLOW
             // this constructor defines an asynchronous operation
@@ -43,11 +43,11 @@ namespace ReactiveAgent.Agents.Dataflow
     // TODO : 5.2
     // (1) implement an Agent using the TPL Dataflow
     // the Agent should be capable to maintains an internal state
-    public class StatefulDataflowAgent<TState, TMessage> : IAgent<TMessage>
+    public class StatefulDataflowAgent_TODO<TState, TMessage> : IAgent<TMessage>
     {
         private TState state;
 
-        public StatefulDataflowAgent(
+        public StatefulDataflowAgent_TODO(
             TState initialState,
             Func<TState, TMessage, Task<TState>> action,
             CancellationTokenSource cts = null)
@@ -56,7 +56,7 @@ namespace ReactiveAgent.Agents.Dataflow
             // this constructor defines an asynchronous operation to apply at the current state (combined to the message ?)
         }
 
-        public StatefulDataflowAgent(TState initialState,
+        public StatefulDataflowAgent_TODO(TState initialState,
             Func<TState, TMessage, TState> action,
             CancellationTokenSource cts = null)
         {
@@ -73,6 +73,74 @@ namespace ReactiveAgent.Agents.Dataflow
 
         public TState State => state;
     }
+
+    #region Solution
+    public class StatefulDataflowAgent<TState, TMessage> : IAgent<TMessage>
+    {
+        private TState state;
+        private readonly ActionBlock<TMessage> actionBlock;
+
+        public StatefulDataflowAgent(
+            TState initialState,
+            Func<TState, TMessage, Task<TState>> action,
+            CancellationTokenSource cts = null)
+        {
+            state = initialState;
+            var options = new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cts != null ?
+                    cts.Token : CancellationToken.None
+            };
+            actionBlock = new ActionBlock<TMessage>(
+                async msg => state = await action(state, msg), options);
+        }
+
+        public Task Send(TMessage message) => actionBlock.SendAsync(message);
+        public void Post(TMessage message) => actionBlock.Post(message);
+
+
+        public StatefulDataflowAgent(TState initialState, Func<TState, TMessage, TState> action, CancellationTokenSource cts = null)
+        {
+            state = initialState;
+            var options = new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cts != null ? cts.Token : CancellationToken.None
+            };
+            actionBlock = new ActionBlock<TMessage>(
+                msg => state = action(state, msg), options);
+        }
+
+        public TState State => state;
+    }
+
+
+    public class StatelessDataflowAgent<TMessage> : IAgent<TMessage>
+    {
+        private readonly ActionBlock<TMessage> actionBlock;
+
+        public StatelessDataflowAgent(Action<TMessage> action, CancellationTokenSource cts = null)
+        {
+            var options = new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cts != null ? cts.Token : CancellationToken.None
+            };
+            actionBlock = new ActionBlock<TMessage>(action, options);
+        }
+
+        public StatelessDataflowAgent(Func<TMessage, Task> action, CancellationTokenSource cts = null)
+        {
+            var options = new ExecutionDataflowBlockOptions
+            {
+                CancellationToken = cts == null ? cts.Token : CancellationToken.None
+            };
+            actionBlock = new ActionBlock<TMessage>(action, options);
+        }
+
+        public void Post(TMessage message) => actionBlock.Post(message);
+        public Task Send(TMessage message) => actionBlock.SendAsync(message);
+
+    }
+    #endregion
 
     public class StatefulDataflowAgentSample
     {
@@ -110,13 +178,30 @@ namespace ReactiveAgent.Agents.Dataflow
             // (1) replace the implementation using the urls.Aggregate with a new one that uses an Agent
             // Suggestion, instead of the Dictionary you should try to use an immutable structure
 
-            var agentStateful = Agent.Start<Dictionary<string, string>>(msg => { });
+            var agentStateful_TODO = Agent.Start<Dictionary<string, string>>(msg => { });
             // (2) complete this code
             urls.ForEach(url =>
             {
-                // agentStateful.Post(url);
+                /* agentStateful.Post(url) */
             });
 
+            #region Solution
+
+            var agentStateful = Agent.Start(ImmutableDictionary<string, string>.Empty,
+                async (ImmutableDictionary<string, string> state, string url) =>
+                {
+                    if (!state.TryGetValue(url, out string content))
+                        using (var webClient = new WebClient())
+                        {
+                            content = await webClient.DownloadStringTaskAsync(url);
+                            await File.WriteAllTextAsync(createFileNameFromUrl(url), content);
+                            return state.Add(url, content);
+                        }
+
+                    return state;
+                });
+
+            #endregion
         }
     }
 }

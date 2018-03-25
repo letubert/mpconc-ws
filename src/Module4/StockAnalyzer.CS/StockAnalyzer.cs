@@ -152,7 +152,7 @@ namespace StockAnalyzer.CS
 
         // TODO : 4.9
         // Process the Stock-History analysis for all the stocks in parallel
-        public async Task ProcessStockHistoryParallel(Chart chart, SynchronizationContext ctx)
+        async Task ProcessStockHistoryParallel_TODO()
         {
             var sw = Stopwatch.StartNew();
 
@@ -161,7 +161,6 @@ namespace StockAnalyzer.CS
             // When all the computation complete, then update the chart
             // Than control the level of parallelism processing max 2 stocks at a given time
             // Suggestion, use the RequestGate class
-            // SUggestion, use the Otherwise operator to load local tickers (from folder Tickers) in case there is a problem to connect to the Web
             List<Task<Tuple<string, StockData[]>>> stockHistoryTasks = null; ;
 
 
@@ -199,9 +198,57 @@ namespace StockAnalyzer.CS
             // ideally, you should use both Retry and Otherwise
 
 
+            #region Solution
+            return await AsyncEx.Retry(
+                            () => googleService(symbol).Otherwise(() => yahooService(symbol)),
+                            5, TimeSpan.FromSeconds(2))
+                        .Bind(data => ConvertStockHistory(data))
+                        .Map(prices => Tuple.Create(symbol, prices));
+            #endregion
 
             return null;
         }
+
+
+
+        #region Solution
+
+        public async Task ProcessStockHistoryParallel(Chart chart, SynchronizationContext ctx)
+        {
+            var sw = Stopwatch.StartNew();
+            string[] stocks = new[] { "MSFT", "FB", "AAPL", "YHOO",
+                                      "EBAY", "INTC", "GOOG", "ORCL" };
+
+            List<Task<Tuple<string, StockData[]>>> stockHistoryTasks =
+              stocks.Select(ProcessStockHistory).ToList();
+
+            Tuple<string, StockData[]>[] stockHistories =
+                    await Task.WhenAll(stockHistoryTasks);
+
+            ShowChart(stockHistories, sw.ElapsedMilliseconds);
+        }
+
+        public async Task ProcessStockHistoryAsComplete(Chart chart, SynchronizationContext ctx)
+        {
+            var sw = Stopwatch.StartNew();
+            string[] stocks = new[] { "MSFT", "FB", "AAPL", "YHOO",
+                                      "EBAY", "INTC", "GOOG", "ORCL" };
+
+            List<Task<Tuple<string, StockData[]>>> stockHistoryTasks =
+                stocks.Select(ProcessStockHistory).ToList();
+
+            while (stockHistoryTasks.Count > 0)
+            {
+                Task<Tuple<string, StockData[]>> stockHistoryTask =
+                            await Task.WhenAny(stockHistoryTasks);
+                stockHistoryTasks.Remove(stockHistoryTask);
+                Tuple<string, StockData[]> stockHistory = await stockHistoryTask;
+
+                ctx.Send(_ => UpdateChart(chart, stockHistory, sw.ElapsedMilliseconds), null);
+                // Thread.Sleep(500);
+            }
+        }
+        #endregion
 
         private void ShowChart(IEnumerable<Tuple<string, StockData[]>> stockHistories, long elapsedTime)
         {

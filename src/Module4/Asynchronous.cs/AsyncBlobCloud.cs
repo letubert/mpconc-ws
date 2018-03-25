@@ -55,7 +55,7 @@ namespace AsyncBlobCloud.Asynchronous
 
         // TODO : 4.3
         // Run the download operations in parallel
-        public async Task DownloadInParallelAsync(string folderPath,
+        public async Task DownloadInParallelAsync_TODO(string folderPath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             //var container = Helpers.GetCloudBlobContainer();
@@ -74,7 +74,7 @@ namespace AsyncBlobCloud.Asynchronous
         }
 
         // TODO : 4.4
-        public Task DownloadInParallelExecuteComplete(string folderPath,
+        public Task DownloadInParallelExecuteComplete_TODO(string folderPath,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.Run(async () =>
@@ -101,6 +101,106 @@ namespace AsyncBlobCloud.Asynchronous
             });
         }
 
+
+        #region Solution
+        // TODO : 4.3
+        // Run the downloads in parallel
+        public async Task DownloadInParallelAsync(string folderPath,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            //var container = Helpers.GetCloudBlobContainer();
+            var container = await Helpers.GetCloudBlobContainerAsync(cancellationToken);
+            var blobs = container.ListBlobs();
+
+            // Create a query that, when executed, returns a collection of tasks.
+            IEnumerable<Task> tasks =
+                blobs.Select(blob =>
+                        DownloadMedia(blob.Uri.Segments[blob.Uri.Segments.Length - 1], folderPath, cancellationToken));
+
+            // Use ToList to execute the query and start the tasks.
+            Task[] downloadTasks = tasks.ToArray();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+        }
+
+        // TODO : 4.4
+        public Task DownloadInParallelExecuteComplete(string folderPath,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.Run(async () =>
+            {
+                //var container = Helpers.GetCloudBlobContainer();
+                var container = await Helpers.GetCloudBlobContainerAsync(cancellationToken);
+                var blobs = container.ListBlobs();
+
+                // ***Create a query that, when executed, returns a collection of tasks.
+                IEnumerable<Task> tasks =
+                    blobs.Select(blob =>
+                            DownloadMedia(blob.Uri.Segments[blob.Uri.Segments.Length - 1], folderPath, cancellationToken));
+
+                // TODO
+                // execute the task in parallel
+                // ***Use ToList to execute the query and start the tasks.
+                List<Task> downloadTasks = tasks.ToList();
+
+                //await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                // ***Add a loop to process the tasks one at a time until none remain.
+                while (downloadTasks.Count > 0)
+                {
+                    // Identify the first task that completes.
+                    Task firstFinishedTask = await Task.WhenAny(downloadTasks);
+
+                    // ***Remove the selected task from the list so that you don't
+                    // process it more than once.
+                    downloadTasks.Remove(firstFinishedTask);
+
+                    // Await the completed task.
+                    await firstFinishedTask;
+
+                    // DO SOMETING
+                }
+            });
+        }
+
+        public async Task DownloadInParallelAsyncUnamb(string folderPath)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            var container = await Helpers.GetCloudBlobContainerAsync(cts.Token);
+            var blobs = container.ListBlobs();
+
+            // ***Create a query that, when executed, returns a collection of tasks.
+            IEnumerable<Task> tasks =
+                blobs.Select(blob =>
+                    DownloadMedia(blob.Uri.Segments[blob.Uri.Segments.Length - 1], folderPath, cts.Token));
+
+            // ***Use ToList to execute the query and start the tasks.
+            List<Task> downloadTasks = tasks.ToList();
+
+            //await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            while (downloadTasks.Count > 0)
+            {
+                // Identify the first task that completes.
+                Task firstFinishedTask = await Task.WhenAny(downloadTasks);
+
+                if (firstFinishedTask.IsCompleted && !firstFinishedTask.IsFaulted)
+                {
+                    // ***Cancel the rest of the downloads. You just want the first one.
+                    cts.Cancel();
+
+                    // Await the completed task.
+                    await firstFinishedTask;
+                    break;
+                }
+                else
+                {
+                    downloadTasks.Remove(firstFinishedTask);
+                }
+            }
+        }
+
+        #endregion
         private async Task DownloadMedia(string blobReference, string folderPath,
             CancellationToken cancellationToken = default(CancellationToken))
         {

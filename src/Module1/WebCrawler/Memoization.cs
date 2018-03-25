@@ -24,10 +24,26 @@ namespace WebCrawler
         // TODO : 1.3
         // (1) Implement Thread-safe memoization function
         // (2) Optionally, implement memoization with Lazy behavior
-        public static Func<T, R> MemoizeThreadSafe<T, R>(Func<T, R> func) where T : IComparable
+        public static Func<T, R> MemoizeThreadSafe_TODO<T, R>(Func<T, R> func) where T : IComparable
         {
           return null;
         }
 
+
+        #region Soultion
+        // Thread-safe memoization function
+        public static Func<T, R> MemoizeThreadSafe<T, R>(Func<T, R> func) where T : IComparable
+        {
+            ConcurrentDictionary<T, R> cache = new ConcurrentDictionary<T, R>();
+            return arg => cache.GetOrAdd(arg, a => func(a));
+        }
+
+        // Thread-Safe Memoization function with safe lazy evaluation
+        public static Func<T, R> MemoizeLazyThreadSafe<T, R>(Func<T, R> func) where T : IComparable
+        {
+            ConcurrentDictionary<T, Lazy<R>> cache = new ConcurrentDictionary<T, Lazy<R>>();
+            return arg => cache.GetOrAdd(arg, a => new Lazy<R>(() => func(a))).Value;
+        }
+        #endregion
     }
 }

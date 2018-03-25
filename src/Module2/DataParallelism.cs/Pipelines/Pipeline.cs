@@ -32,7 +32,17 @@ namespace DataParallelism.Pipelines
         // the new Pipeline would have signature IPipeline<TInput, TMapped
 
         // ... CODE HERE
-          public IPipeline<TInput, TMapped> Then<TMapped>(Func<TOutput, TMapped> nextfunction) => null;
+        //  public IPipeline<TInput, TMapped> Then<TMapped>(Func<TOutput, TMapped> nextfunction) 
+
+        #region solution
+
+        public IPipeline<TInput, TMapped> Then<TMapped>(Func<TOutput, TMapped> nextfunction)
+        {
+            var compose = Functional.Functional.Compose(_function, nextfunction);
+            return new CsPipeline<TInput, TMapped>(compose);
+        }
+
+        #endregion
 
 
         public void Enqueue(TInput input, Func<Tuple<TInput, TOutput>, Unit> callback)
@@ -75,6 +85,14 @@ namespace DataParallelism.Pipelines
 
                         Continuation continuation;
 
+                        #region Solution
+
+                        if (BlockingCollection<Continuation>.TryTakeFromAny(_continuations, out continuation) >= 0)
+                        {
+                            continuation.Callback.Invoke(
+                                Tuple.Create(continuation.Input, _function.Invoke(continuation.Input)));
+                        }
+                        #endregion
                     }
                 }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 

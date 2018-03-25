@@ -49,16 +49,55 @@ namespace DataflowObjectPoolEncryption
 
         // TODO : 5.1
         // Complete the Send method that push an item to the local DataFlow block
-        public Task<bool> Send(T item) =>
+        public Task<bool> Send_TODO(T item) =>
                 Task.FromResult(false); // <<= replace this line of code with your implementation
 
         // (2)
         // Complete the GetAsync method that retrieves asynchronously
         // the recycled data from the ObjectPool
-        public Task<T> GetAsync(int timeout = 0)
+        public Task<T> GetAsync_TODO(int timeout = 0)
         {
             return Task.FromResult<T>(default(T)); // <<= replace this line of code with your implementation
         }
+
+        #region Solution
+        public Task<bool> Send(T item) => buffer.SendAsync(item);
+
+        public Task<T> GetAsync(int timeout = 0)
+        {
+            var tcs = new TaskCompletionSource<T>();
+            buffer
+                .ReceiveAsync(TimeSpan.FromMilliseconds(msecTimeout))
+                .ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        if (t.Exception.InnerException is TimeoutException)
+                        {
+                            tcs.SetResult(factory());
+                        }
+                        else
+                        {
+                            tcs.SetException(t.Exception);
+                        }
+                    }
+                    else if (t.IsCanceled)
+                    {
+                        tcs.SetCanceled();
+                    }
+                    else
+                    {
+                        tcs.SetResult(t.Result);
+                    }
+                });
+            return tcs.Task;
+        }
+
+
+        #endregion
+
+
+
 
     }
 }

@@ -20,14 +20,14 @@ namespace DataParallelism.cs
             var fuzzyMatchImplementations =
                 new[]
                 {
-                    //new Tuple<String, Action[]>(
-                    //    "C# Sequential FuzzyMatch", run(ProcessFuzzyMacth.LinqFuzzyMatch)),
-                    //new Tuple<String, Action[]>(
-                    //    "C# Multiple Tasks FuzzyMatch", run(ProcessFuzzyMacth.MultipleTasksFuzzyMatch)),
-                    //new Tuple<String, Action[]>(
-                    //    "C# Parallel Loop FuzzyMatch", run(ProcessFuzzyMacth.ParallelLoopFuzzyMatch)),
-                    //new Tuple<String, Action[]>(
-                    //    "C# Parallel FuzzyMatch", run(ProcessFuzzyMacth.ParallelLinqFuzzyMatch)),
+                    new Tuple<String, Action[]>(
+                        "C# Sequential FuzzyMatch", run(ProcessFuzzyMacth.LinqFuzzyMatch)),
+                    new Tuple<String, Action[]>(
+                        "C# Multiple Tasks FuzzyMatch", run(ProcessFuzzyMacth.MultipleTasksFuzzyMatch)),
+                    new Tuple<String, Action[]>(
+                        "C# Parallel Loop FuzzyMatch", run(ProcessFuzzyMacth.ParallelLoopFuzzyMatch)),
+                    new Tuple<String, Action[]>(
+                        "C# Parallel FuzzyMatch", run(ProcessFuzzyMacth.ParallelLinqFuzzyMatch)),
                         new Tuple<String, Action[]>(
                         "C# Parallel PLINQ Partitioner FuzzyMatch", run(ProcessFuzzyMacth.ParallelLinqPartitionerFuzzyMatch))
                 };

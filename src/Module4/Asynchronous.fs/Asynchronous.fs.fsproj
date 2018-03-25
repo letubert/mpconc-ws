@@ -58,9 +58,9 @@
     <Compile Include="RequestGate.fs" />
     <Compile Include="AsyncModule.fs" />
     <Compile Include="AsyncBlobCloud.fs" />
-    <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\CommonHelpers\CommonHelpers.csproj">

@@ -17,6 +17,11 @@ namespace WebCrawler
         // TODO : 1.4
         // Implement WebCrawlerMemoizedThreadSafe functions for a thread save memoization (lazy evaluation optional)
 
+        #region Solution
+        //  Thread-safe memoization function
+        public static Func<string, IEnumerable<string>> WebCrawlerMemoizedThreadSafe =
+            Memoization.MemoizeThreadSafe<string, IEnumerable<string>>(WebCrawler);
+        #endregion
 
         public static IEnumerable<string> WebCrawler(string url)
         {
@@ -79,7 +84,16 @@ namespace WebCrawler
                Console.WriteLine($"Crawled {webPageTitles.Count()} page titles");
            });
 
+            #region Solution
+            BenchPerformance.Time("Thread-safe memoization function", () =>
+            {
+                var webPageTitles = from url in urls.AsParallel()
+                                    from pageContent in WebCrawlerMemoizedThreadSafe(url)
+                                    select ExtractWebPageTitle(pageContent);
 
+                Console.WriteLine($"Crawled {webPageTitles.Count()} page titles");
+            });
+            #endregion
         }
     }
 }

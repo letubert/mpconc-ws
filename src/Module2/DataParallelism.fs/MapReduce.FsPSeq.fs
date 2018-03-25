@@ -40,6 +40,8 @@ module MapReduceFsPSeq =
         inputs |> // compose map and reduce here
                   (id) // <= remove this after implementation
 
+        // solution
+        //inputs |> (mapF M map >> reduceF R reduce)
 
 
     // Code example using (map >> reduce) mapReduce function
@@ -55,7 +57,12 @@ module MapReduceFsPSeq =
 
         executeMapReduce ranks
 
-
+        // Solution
+        let executeMapReduce (ranks:(string * float) seq)=
+            let M,R = 10,5
+            let pg = MapReduce.Task.PageRank(ranks)
+            mapReduce data (pg.Map) (pg.Reduce) M R
+        executeMapReduce ranks
 
 module MapReduceSequential =
 

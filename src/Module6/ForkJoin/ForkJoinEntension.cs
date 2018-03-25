@@ -52,7 +52,7 @@ namespace ParallelForkJoin
                 var agent = reducerAgent as StatefulDataflowAgent<R, T2>;
                 disposable.Dispose();
                 tcs.SetResult(agent.State);
-            });  
+            });
 
             return await tcs.Task;
         }

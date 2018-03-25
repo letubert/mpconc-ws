@@ -69,10 +69,30 @@ namespace WebCrawler
         // (1) implement a web-crawler
         // leverage the pending & visited collections to avoid to download the same site twice
         // can you replace it using Memoization ?
-        async static Task Crawler()
+        async static Task Crawler_TODO()
         {
             // code here
         }
+
+        #region Solution
+
+        static async Task Crawler()
+        {
+            foreach (var url in pending.GetConsumingEnumerable())
+            {
+                // string url = pending.Take();
+                if (!visited.ContainsKey(url))
+                {
+                    visited.TryAdd(url, true);
+                    var doc = await DownloadDocument(url);
+                    foreach (var link in ExtractLinks(doc))
+                        pending.Add(link);
+                    Console.WriteLine("[{0}]\n{1}\n", url, GetTitle(doc));
+                }
+            }
+        }
+
+        #endregion
 
         // --------------------------------------------------------------
         // Start 100 of web crawlers using only small number of threads
@@ -89,6 +109,7 @@ namespace WebCrawler
 
         static void Main(string[] args)
         {
+
             List<string> urls = new List<string> {
                 @"http://www.google.com",
                 @"http://www.microsoft.com",

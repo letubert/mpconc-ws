@@ -11,7 +11,34 @@ let rect = Int32Rect(0,0,grid.Width, grid.Height)
 let source = WriteableBitmap(grid.Width, grid.Height, 96., 96., PixelFormats.Gray8, BitmapPalette([|Colors.Black; Colors.White|]))
 let image = Controls.Image(Source=source,Stretch=Stretch.Uniform)
 
+// Solution
 let updateAgent () =
+    let ctx = SynchronizationContext.Current
+    let pixels = Array.zeroCreate<byte> (size*size)
+    let agent = new Agent<UpdateView>(fun inbox ->
+        let rec loop agentStates = async {
+            let! msg = inbox.Receive()
+            match msg with
+            | Reset -> return! loop (Dictionary<Location, bool>(HashIdentity.Structural))
+            | Update(alive, location) ->
+                agentStates.[location] <- alive
+                if agentStates.Count = gridProduct then
+                    applyGrid (fun x y ->
+                            match agentStates.TryGetValue({x=x;y=y}) with
+                            | true, s when s = true ->
+                                pixels.[x+y*size] <- byte 128
+                            | _ -> pixels.[x+y*size] <- byte 0)
+                    do! Async.SwitchToContext ctx
+                    source.WritePixels(rect, pixels, size, 0)
+                    do! Async.SwitchToThreadPool()
+                return! loop agentStates
+        }
+        loop (Dictionary<Location, bool>(HashIdentity.Structural)))
+    agent
+
+
+// TODO
+let updateAgent_TODO () =
     let ctx = SynchronizationContext.Current
     let pixels = Array.zeroCreate<byte> (size*size)
     let agent = new Agent<UpdateView>(fun inbox ->

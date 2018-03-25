@@ -55,11 +55,22 @@ let loadWindow() =
     // create an agent that maintains an internal state with the Point(s) of the mouse
     // when the circle is dragged
     // the agent should return the current state when requested (see MementoMessage type)
-    let agentMemento =
+    let agentMemento_TODO =
         MailboxProcessor<MementoMessage>.Start(fun inbox ->
                 // replace the following line of code with your implementation
                 async.Return())
 
+    // Solution
+    let agentMemento =
+        MailboxProcessor<MementoMessage>.Start(fun inbox ->
+                let rec loop (points:Point list) = async {
+                    let! msg = inbox.Receive()
+                    match msg with
+                    | Put(p:Point)-> return! loop (p::points)
+                    | Get(reply) -> if points |> List.isEmpty then reply.Reply(None)
+                                    else reply.Reply(Some points)
+                                    return! loop [] }
+                loop [])
 
     let ballXoffest = window.Ball.Width / 2.
     let ballYoffest = window.Ball.Height / 2.
@@ -69,7 +80,7 @@ let loadWindow() =
         Canvas.SetTop(window.Ball, position.Y)
 
     /// Subscription for the entire Drag command
-    let subscription =
+    let subscription_TODO =
 
         // TODO 3.4
         // TODO :   Collect the coordinate points during the dragging,
@@ -105,6 +116,50 @@ let loadWindow() =
         |> Observable.subscribe (fun (position : Point) ->
                     moveBall(position)
                     window.polyline.Points.Add(position))
+
+
+
+
+    // SOLUTION
+    /// Subscription for the entire Drag command
+    let subscription =
+
+
+        // TODO:    Add drawing functionality (may be a red line)
+        // TODO:    Collect the coordinate points during the dragging,
+        //          Create an undo logic (memento pattern), when the mouse is released
+        //          the ball goes backward (adding a delay for animation)
+        //          follow the original path until the original starting point is reached
+
+          List.reduce Observable.merge [start_drag
+                                        stop_drag
+                                        moving ]
+
+        |> Observable.scan (fun (state : DragState) (change : DragChange) ->
+                            match change with
+                            | StartDrag(offset) -> { state with dragging=true; offset=offset }
+                            | StopDrag ->       let getPoints =
+                                                     agentMemento.PostAndReply(fun ch -> Get(ch))
+                                                match getPoints with
+                                                | None -> ()
+                                                | Some(points) ->
+                                                    async { for p in points do
+                                                                do! Async.Sleep 50
+                                                                window.polyline.Points.Remove(p) |> ignore
+                                                                moveBall p } |> Async.StartImmediate
+                                                { state with position=new Point(); dragging=false}
+                            | UpdatePosition(pos) ->  if state.dragging = true
+                                                            then { state with position=pos }
+                                                      else state)
+            { dragging=false; position=new Point(); offset=new Point() }
+        |> Observable.filter (fun state -> state.dragging = true)
+        |> Observable.map (fun (state : DragState) ->
+                    let diff = state.position - state.offset
+                    Point(diff.X, diff.Y))
+        |> Observable.subscribe (fun (position : Point) ->
+                    moveBall(position)
+                    window.polyline.Points.Add(position)
+                    agentMemento.Post(Put position))
 
     window.Root
 

@@ -102,6 +102,28 @@ namespace RxConcurrentStockTickers
                         print(x);
                     });
 
+                #region Solution
+                stockFiles
+                   .ObservableStreams(StockData.Parse, 50)
+                   .GroupBy(stock =>
+                   {
+                        // .Throttle(TimeSpan.FromMilliseconds(100))
+                        //       Thread.Sleep(100);
+                        return stock.Symbol;
+                   })
+                   .Subscribe(group =>
+                    {
+                        group
+                        .ObserveOn(ctx)
+                        // .Buffer(10)
+                        .Subscribe(x =>
+                        {
+                            UpdateChart(chart, x, sw.ElapsedMilliseconds);
+                            print(x);
+
+                        });
+                    });
+                #endregion
 
             });
 

@@ -38,12 +38,12 @@ namespace ConsoleApplication1
 
                 // TODO : 4.1
                 // Async downloads
-                var asyncBlobCloud = new AsyncBlobCloud.Asynchronous.AsyncBlobCloud();
+               var asyncBlobCloud = new AsyncBlobCloud.Asynchronous.AsyncBlobCloud();
 
-                asyncBlobCloud.DownloadMedia(tempImageFolder);
+               // asyncBlobCloud.DownloadMedia(tempImageFolder);
                 // asyncBlobCloud.DownloadMediaAsync(tempImageFolder).Wait();
                 // asyncBlobCloud.DownloadInParallelAsync(tempImageFolder).Wait();
-                // asyncBlobCloud.DownloadInParallelExecuteComplete(tempImageFolder).Wait();
+                 asyncBlobCloud.DownloadInParallelExecuteComplete(tempImageFolder).Wait();
 
                 Console.WriteLine("Completed!!");
                 Console.ReadLine();

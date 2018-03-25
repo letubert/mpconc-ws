@@ -54,14 +54,14 @@ namespace FaceDetection
         {
             Images.Clear();
             // Sequential
-           // StartFaceDetection(ImagesFolder);
+            // StartFaceDetection(ImagesFolder);
 
             // Tasks
             //StartFaceDetection_Tasks(ImagesFolder);
             // Parallel using Tasks
-            StartFaceDetection_Parallel_Tasks(ImagesFolder);
-            //StartFaceDetection_Pipeline(ImagesFolder);
-            //StartFaceDetection_Pipeline_FSharpFunc(ImagesFolder);
+            // StartFaceDetection_Parallel_Tasks(ImagesFolder);
+            StartFaceDetection_Pipeline(ImagesFolder);
+            //  StartFaceDetection_Pipeline_FSharpFunc(ImagesFolder);
         }
 
         // Face Detection function in C#
@@ -184,6 +184,15 @@ namespace FaceDetection
                     return image.ToBitmap();
                 };
 
+            #region Solution
+
+            return from image in Task.Run(() => new Image<Bgr, byte>(fileName))
+                   from imageFrame in Task.Run(() => image.Convert<Gray, byte>())
+                   from bitmap in Task.Run(() => CascadeClassifierThreadLocal.Value.DetectMultiScale(
+                                                imageFrame, 1.1, 3, System.Drawing.Size.Empty)
+                                  ).Select(faces => drawBoundries(faces, image))
+                   select bitmap;
+            #endregion
 
             // TODO code here
             return null;
@@ -192,7 +201,7 @@ namespace FaceDetection
         void StartFaceDetection_Pipeline(string imagesFolder)
         {
             // The refactor Detect-Face code using the parallel Pipeline
-            var files = Directory.GetFiles(ImagesFolder);
+            var files = Directory.GetFiles(ImagesFolder).ToList();
 
             Func<string, Image<Bgr, byte>> imageFn =
                 (fileName) => new Image<Bgr, byte>(fileName);
@@ -214,25 +223,31 @@ namespace FaceDetection
             // TODO : 2.8
             // Replace Pipeline implementation with "CsPipeline" (look for TODO : 2.4)
             // suggestion look into the next mehoth that uses the F# Pipeline
-            IPipeline<string, Bitmap> imagePipe = null;
-                //DataParallelism.Pipelines.CsPipeline
+            IPipeline<string, Bitmap> imagePipe_TODO = null;
+            //DataParallelism.Pipelines.CsPipeline
 
 
-
+            #region Solution
+            var imagePipe = Pipeline.PipelineFunc.Pipeline<string, Image<Bgr, byte>>
+                    .Create(imageFn)
+                    .Then(grayFn)
+                    .Then(detectFn)
+                    .Then(drawFn);
+            #endregion
 
             CancellationTokenSource cts = new CancellationTokenSource();
             imagePipe.Execute(4, cts.Token);
 
             // TODO uncomment these code after Pipeline implementatation
-            //foreach (string fileName in files)
-            //    imagePipe.Enqueue(fileName,
-            //        ((tup) =>
-            //        {
-            //            Application.Current.Dispatcher.Invoke(
-            //                () =>
-            //                Images.Add(tup.Item2.ToBitmapImage()));
-            //            return (Unit)Activator.CreateInstance(typeof(Unit), true);
-            //        }));
+            foreach (string fileName in files)
+                imagePipe.Enqueue(fileName,
+                    ((tup) =>
+                    {
+                        Application.Current.Dispatcher.Invoke(
+                            () =>
+                            Images.Add(tup.Item2.ToBitmapImage()));
+                        return (Unit)Activator.CreateInstance(typeof(Unit), true);
+                    }));
         }
 
         void StartFaceDetection_Pipeline_FSharpFunc(string imagesFolder)
@@ -256,7 +271,12 @@ namespace FaceDetection
                     return faces.Item1.ToBitmap();
                 };
 
-            Pipeline.IPipeline<string, Bitmap> imagePipe = null;
+            var imagePipe =
+                Pipeline<string, Image<Bgr, byte>>
+                    .Create(imageFn.ToFSharpFunc())
+                    .Then(grayFn.ToFSharpFunc())
+                    .Then(detectFn.ToFSharpFunc())
+                    .Then(drawFn.ToFSharpFunc());
 
             CancellationTokenSource cts = new CancellationTokenSource();
             imagePipe.Execute(4, cts.Token);

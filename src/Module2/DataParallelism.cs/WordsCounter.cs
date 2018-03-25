@@ -47,6 +47,27 @@ namespace DataParallelism.CSharp
         }
 
 
+        #region Solution
+        public static Dictionary<string, int> PureWordsPartitioner(IEnumerable<IEnumerable<string>> content) =>
+            (from lines in content.AsParallel()
+             from line in lines
+             from word in line.Split(' ')
+             select word.ToUpper())
+                .GroupBy(w => w)
+                    .OrderByDescending(v => v.Count()).Take(10)
+                    .ToDictionary(k => k.Key, v => v.Count());
+
+        public static Dictionary<string, int> WordsPartitioner(string source)
+        {
+            var contentFiles =
+                (from filePath in Directory.GetFiles(source, "*.txt")
+                 let lines = File.ReadLines(filePath)
+                 select lines);
+
+            return PureWordsPartitioner(contentFiles);
+        }
+        #endregion
+
 
         public static void Run()
         {

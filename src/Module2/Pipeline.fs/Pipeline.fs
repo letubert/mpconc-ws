@@ -30,6 +30,11 @@ type Pipeline<'a, 'b> private (func:'a -> 'b) as this =
 
     // let then'  ...
 
+    // #region solution
+    let then' (nextFunction:'b -> 'c) =
+        Pipeline(func >> nextFunction) :> IPipeline<_,_>
+    // #endregion
+
     let enqueue (input:'a) (callback:('a * 'b) -> unit) =
         BlockingCollection<Continuation<_,_>>.AddToAny(continuations, Continuation(input, callback))
 
@@ -53,8 +58,9 @@ type Pipeline<'a, 'b> private (func:'a -> 'b) as this =
         Pipeline(func) :> IPipeline<_,_>
 
     interface IPipeline<'a, 'b> with
-                    // TODO : 2.16 remove "Unchecked.defaultof<IPipeline<_,_>>"  and apply the new function created, for example "then' nextFunction"
+        // TODO : 2.16 remove "Unchecked.defaultof<IPipeline<_,_>>"  and apply the new function created, for example "then' nextFunction"
         member this.Then(nextFunction) = Unchecked.defaultof<IPipeline<_,_>> // then' nextFunction
+
         member this.Enqueue(input, callback) = enqueue input callback |> ignore
         member this.Stop() = stop()
         member this.Execute (blockingCollectionPoolSize, cancellationToken) =

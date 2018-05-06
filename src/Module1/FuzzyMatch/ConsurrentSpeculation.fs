@@ -32,14 +32,6 @@
     // Implement the fuzzyMatch using PSeq
     let fuzzyMatchPSeq_TODO (words:string list) = ()
 
-
-
-
-
-
-
-
-
     let fuzzyMatchPSeq (words:string list) =
         let wordSet = new HashSet<string>(words)
         fun word ->

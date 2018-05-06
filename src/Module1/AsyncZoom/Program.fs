@@ -129,8 +129,6 @@ type ZoomControl(width:int,height:int) as self =
                 let sw = System.Diagnostics.Stopwatch.StartNew()
 
                 if runInParallel = true then
-                    do render points (0,height,1) pixels
-                else
 
                 // TODO:    Add parallelism functionality
                 //          to speed up the rendering
@@ -138,7 +136,7 @@ type ZoomControl(width:int,height:int) as self =
                     // replace this sync code
                     //do render points (0,height,1) pixels
 
-                    //#region Solution
+                    // #region Solution
                     let threads = Environment.ProcessorCount
                     do! [0..threads - 1]
                             |> List.map (fun y ->
@@ -146,7 +144,10 @@ type ZoomControl(width:int,height:int) as self =
                                 })
                             |> Async.Parallel
                             |> Async.Ignore
-                    //#endregion
+                    // #endregion
+                else
+                    do render points (0,height,1) pixels
+
                 self.Title <- sprintf "Time execution %d ms" sw.ElapsedMilliseconds
 
                 canvas.Children.Remove preview |> ignore

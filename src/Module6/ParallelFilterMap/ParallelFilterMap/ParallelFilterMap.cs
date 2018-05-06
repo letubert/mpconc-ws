@@ -46,10 +46,15 @@ namespace ParallelFilterMap
                     // this collections is that passed as output of the FilterMap functions
                     // Suggestion, use an Immutable collection and look into the API exposed by the "ImmutableInterlocked" class
 
-
+                    #region Solution
+                    atomResult.Swap(r => r.Add(localList));
+                    #endregion
                 });
 
-            // Code here
+            #region Solution
+            return atomResult.Value.SelectMany(id => id).ToArray();
+            #endregion
+
             return null;
 
         }

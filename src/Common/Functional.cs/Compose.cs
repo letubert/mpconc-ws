@@ -8,7 +8,6 @@ namespace Functional
 {
     public static partial class Functional
     {
-
         public static Func<T1, TR> Compose<T1, T2, TR>(this Func<T1, T2> f1, Func<T2, TR> f2) => v => f2(f1(v));
 
         public static Func<T1, T2, TR> Compose<T1, T2, T3, TR>(this Func<T1, T2, T3> f1, Func<T3, TR> f2)

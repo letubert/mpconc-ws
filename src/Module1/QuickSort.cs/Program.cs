@@ -32,7 +32,7 @@ namespace QuickSort.cs
 
         static void Main(string[] args)
         {
-            //RunRecursion();
+            // RunRecursion();
 
             Random rand = new Random((int)DateTime.Now.Ticks);
             int attempts = 5;
@@ -57,7 +57,7 @@ namespace QuickSort.cs
                     new Tuple<String, Action[]>(
                         "Parallel", run(QuickSort.QuickSort_Parallel)),
                     new Tuple<String, Action[]>(
-                        "ParallelWithDepth", run(QuickSort.QuickSort_Parallel_Threshold)),
+                        "Parallel with Depth", run(QuickSort.QuickSort_Parallel_Threshold)),
                 };
 
             Application.Run(

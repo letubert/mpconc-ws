@@ -5,6 +5,7 @@ open System.Linq
 open System.Collections.Concurrent
 open System.Threading
 open System.Threading.Tasks
+open Functional
 
 // This is a version of the pipeline that uses the .NET Func delegate
 // in place of the F# functions.
@@ -36,8 +37,10 @@ module PipelineFunc =
         // implement a then' function that composes a given function to the current "func" one
         // make it C# compatible simply using the Func delegate type
 
-        // solution
-        // let then' (nextFunction:Func<'b,'c>) =
+        // #region solution
+        let then' (nextFunction:Func<'b,'c>) =
+            Pipeline(func.Compose(nextFunction)) :> IPipeline<_,_>
+        // #end solution
 
         let enqueue (input:'a) (callback:Func<('a * 'b), unit>) =
             BlockingCollection<Continuation<_,_>>.AddToAny(continuations, Continuation(input, callback))

@@ -159,9 +159,10 @@ namespace DataParallelism.CSharp
 
         public static void Main(string[] args)
         {
-
             ParalellReduce.SumPrimeNumber_Reducer();
+
             ProcessBooksWithMapReduce.Run();
+
             WordsCounterDemo.Run();
 
             Demo.PrintSeparator();

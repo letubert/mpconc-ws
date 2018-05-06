@@ -33,14 +33,15 @@ namespace StockAnalyzer.CS
 
     public class StockAnalyzer
     {
-        public static readonly string[] stocks = new[] { "APPL", "AMZN", "FB", "GOOG", "MSFT" };
+        public static readonly string[] stocks =
+            new[] { "MSFT", "FB", "AAPL", "YHOO", "EBAY", "INTC", "GOOG", "ORCL" };
 
         //  The Or combinator applies to falls back behavior
-        Func<string, string> googleSourceUrl = (symbol) =>
-            $"http://www.google.com/finance/historical?q={symbol}&output=csv";
+        Func<string, string> alphavantageSourceUrl = (symbol) =>
+            $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&outputsize=full&apikey=W3LUV5WID6C0PV5L&datatype=csv";
 
-        Func<string, string> yahooSourceUrl = (symbol) =>
-            $"http://ichart.finance.yahoo.com/table.csv?s={symbol}";
+        Func<string, string> stooqSourceUrl = (symbol) =>
+            $"https://stooq.com/q/d/l/?s={symbol}.US&i=d";
 
         //  Stock prices history analysis
         async Task<StockData[]> ConvertStockHistory(string stockHistory)
@@ -64,7 +65,7 @@ namespace StockAnalyzer.CS
 
         async Task<string> DownloadStockHistory(string symbol)
         {
-            string url = googleSourceUrl(symbol);
+            string url = alphavantageSourceUrl(symbol);
 
             var request = WebRequest.Create(url);
             using (var response = await request.GetResponseAsync()
@@ -97,7 +98,7 @@ namespace StockAnalyzer.CS
         async Task<string> DownloadStockHistory(string symbol,
                                                 CancellationToken token)
         {
-            string stockUrl = googleSourceUrl(symbol);
+            string stockUrl = alphavantageSourceUrl(symbol);
             var request = await new HttpClient().GetAsync(stockUrl, token);
             return await request.Content.ReadAsStringAsync();
         }
@@ -110,7 +111,7 @@ namespace StockAnalyzer.CS
             List<Task<Tuple<string, StockData[]>>> stockHistoryTasks =
                 stockSymbols.Select(async symbol =>
                 {
-                    var request = HttpWebRequest.Create(googleSourceUrl(symbol));
+                    var request = HttpWebRequest.Create(alphavantageSourceUrl(symbol));
                     using (var response = await request.GetResponseAsync())
                     using (var reader = new StreamReader(response.GetResponseStream()))
                     {
@@ -184,9 +185,9 @@ namespace StockAnalyzer.CS
                 service => stock => DownloadStockHistory(service, stock);
 
             Func<string, Task<string>> googleService =
-                                    downloadStock(googleSourceUrl);
+                                    downloadStock(alphavantageSourceUrl);
             Func<string, Task<string>> yahooService =
-                                    downloadStock(yahooSourceUrl);
+                                    downloadStock(stooqSourceUrl);
 
             // TODO : 4.8
             // Take a look at the operators
@@ -208,8 +209,6 @@ namespace StockAnalyzer.CS
 
             return null;
         }
-
-
 
         #region Solution
 

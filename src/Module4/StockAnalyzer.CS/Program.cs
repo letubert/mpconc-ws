@@ -40,7 +40,7 @@ namespace StockAnalyzer.CS
             //    .AnalyzeStockHistory(StockAnalyzer.Stocks)
             //    .Wait();
 
-            Task.Factory.StartNew(async () => await stockAnalyzer.ProcessStockHistoryParallel(chart, ctx));
+            Task.Factory.StartNew(async () => await stockAnalyzer.ProcessStockHistoryAsComplete(chart, ctx));
             Application.Run(form);
             Console.ReadLine();
         }

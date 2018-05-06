@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +7,11 @@ using DataParallelism.CSharp;
 
 namespace DataParallelism.CSharp
 {
+    using ConcurrencyEx;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Threading;
     using static Functional.Functional;
 
     // TODO : 2.2
@@ -27,8 +31,8 @@ namespace DataParallelism.CSharp
         // public static TValue Reduce<TValue>(this IEnumerable<TValue> source) =>
         public static TValue Reduce_TODO<TValue>(this ParallelQuery<TValue> source, Func<TValue, TValue, TValue> func) => default(TValue);
 
-         public static TValue Reduce_TODO<TValue>(this IEnumerable<TValue> source, TValue seed,
-            Func<TValue, TValue, TValue> reduce) => default(TValue);
+        public static TValue Reduce_TODO<TValue>(this IEnumerable<TValue> source, TValue seed,
+           Func<TValue, TValue, TValue> reduce) => default(TValue);
 
         public static TResult[] Reduce_TODO<TSource, TKey, TMapped, TResult>(
             this IEnumerable<IGrouping<TKey, TMapped>> source, Func<IGrouping<TKey, TMapped>, TResult> reduce) => null;
@@ -52,6 +56,23 @@ namespace DataParallelism.CSharp
                 .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
                 .WithDegreeOfParallelism(Environment.ProcessorCount)
                 .Select(reduce).ToArray();
+
+        public static R Reduce<T, R>(IEnumerable<T> data, Func<T, R> selector, Func<R, R, R> reducer, CancellationToken token = new CancellationToken()) where R : class where T : class
+        {
+            var partitioner = Partitioner.Create(data, EnumerablePartitionerOptions.NoBuffering);
+            var results = ImmutableArray<R>.Empty;
+            Parallel.ForEach(partitioner,
+                new ParallelOptions{ TaskScheduler = TaskScheduler.Default, CancellationToken = token, MaxDegreeOfParallelism = Environment.ProcessorCount },
+                () => new List<R>(),
+                (item, loopState, local) =>
+                {
+                    local.Add(selector(item));
+                    return local;
+                },
+                final => ImmutableInterlocked.InterlockedCompareExchange<R>(ref results, results.AddRange(final), results)
+                );
+            return results.AsParallel().Aggregate(reducer);
+        }
         #endregion
 
         public static void SumPrimeNumber_Reducer()
